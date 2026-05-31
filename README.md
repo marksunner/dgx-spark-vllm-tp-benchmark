@@ -222,11 +222,40 @@ Each node needs its own `-v` path mapping (home directories differ). The `launch
 
 DeepSeek V4 Flash's extremely compact KV cache (~2% of traditional GQA) means 40 GB supports well over 1M tokens of context.
 
+## Agent Test Results (Hermes + Discord)
+
+Tested as a live Discord agent via [Hermes Agent v0.14.0](https://github.com/nousresearch/hermes-agent):
+
+| Capability | Status |
+|-----------|--------|
+| Basic chat/greetings | ✅ Works |
+| Story writing (multi-part) | ✅ Works (slow but correct) |
+| Code generation via chat | ✅ Works |
+| Tool calling (file ops) | ❌ Format mismatch — infinite loop |
+| Tool calling (code execution) | ❌ Empty responses after tool calls |
+
+**Key findings:**
+- Hermes requires `--max-model-len 65536` minimum (64K context requirement)
+- Must add `--enable-auto-tool-choice --tool-call-parser deepseek_v4 --tokenizer-mode deepseek_v4`
+- The `deepseek_v4` tool-call parser technically works (calls are attempted) but results are unreliable — the model frequently returns empty responses after tool invocations, creating "nudge to continue" loops
+- For **pure inference/chat** workloads: production-ready
+- For **agentic tool-calling** workloads: not yet reliable without framework adaptation
+
+This is likely solvable with Hermes updates or a custom tool-call parser, but is not plug-and-play today.
+
+## Context Scaling
+
+| max-model-len | Status | Notes |
+|--------------|--------|-------|
+| 4,096 | ✅ Works | Insufficient for Hermes (needs 64K min) |
+| 65,536 | ✅ Works | Fits with 0.80 GPU utilisation, ~16K KV cache tokens |
+| 131,072 | ❌ OOM during Marlin weight loading | Needs investigation — may work with 0.75 util or after stopping other containers |
+
 ## Next Steps
 
-- [ ] Test with `--max-model-len 65536` and `131072` for longer context benchmarks
+- [ ] Investigate 128K context (may need lower gpu-memory-utilization or phased loading)
 - [ ] Measure prefill throughput at longer prompts
-- [ ] Test as a live Hermes agent backend
+- [ ] Test tool-call compatibility with updated Hermes/parser versions
 - [ ] Compare stability over extended use (hours/days)
 
 ## Credits
