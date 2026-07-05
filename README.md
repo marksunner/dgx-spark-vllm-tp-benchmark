@@ -1,3 +1,32 @@
+<!--
+Deprecation banner for github.com/marksunner/dgx-spark-vllm-tp-benchmark.
+Paste everything below this comment at the VERY TOP of README.md, above the
+existing "# DeepSeek V4 Flash — Dual DGX Spark vLLM Tensor Parallelism
+Benchmark" heading. Keep all original content below it unchanged.
+-->
+
+> [!WARNING]
+> **⚠️ This benchmark is outdated (early 2026) and no longer reflects what dual DGX Sparks can do with DeepSeek V4 Flash.**
+>
+> The community has moved far past these numbers. For the current best recipe, use
+> **[tonyd2wild/deepseek-v4-flash-2x-spark-1m](https://github.com/tonyd2wild/deepseek-v4-flash-2x-spark-1m)**:
+>
+> | | This repo (early 2026) | tonyd2wild recipe (current) |
+> |---|---|---|
+> | **Decode speed** | 12.4 tok/s | **45.5 tok/s** (MTP n=2) |
+> | **Context** | 4K tested | **1M tokens** (400K/800K prompts served in production) |
+> | **Prefill** | not measured at scale | ~800–900 tok/s on 400K–800K prompts |
+> | **Setup** | hand-patched fork + Ray | pre-built Docker image, two boxes and a cable |
+> | **Status** | benchmark snapshot | running a 24/7 production agent fleet |
+>
+> If you arrived here looking for how to serve DeepSeek V4 Flash on two Sparks, **start there, not here.**
+>
+> The content below is preserved unchanged for historical reference — it documents the state of dual-Spark vLLM tensor parallelism in early 2026, including the NCCL/RoCE setup details and the layer-42 DeepGEMM fix, some of which may still be useful background.
+
+---
+
+<!-- Original README content continues unchanged below this line. -->
+
 # DeepSeek V4 Flash — Dual DGX Spark vLLM Tensor Parallelism Benchmark
 
 Running DeepSeek V4 Flash (284B total / 13B active MoE) across **two DGX Sparks** using vLLM with tensor parallelism over NCCL/RoCE.
